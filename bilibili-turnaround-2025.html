@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>亏 → 盈 · 哔哩哔哩 2025 财务转折调查</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@300..700&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0E0E11;
+  --ink-2:#1A1A1F;
+  --paper:#F4EFE4;
+  --paper-2:#EBE4D2;
+  --pink:#FB7299;
+  --pink-deep:#D94173;
+  --red:#B8373B;
+  --green:#1F6F55;
+  --gold:#CFA14A;
+  --mute:#8A857A;
+  --rule:rgba(244,239,228,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--paper);font-family:"Noto Serif SC","Fraunces",Georgia,serif;font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+
+/* decorative grain */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+.label{font-family:"Instrument Sans",sans-serif;font-weight:500;letter-spacing:.22em;text-transform:uppercase;font-size:11px;color:var(--mute)}
+.mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.serif-display{font-family:"Fraunces",serif;font-feature-settings:"ss01","ss02";font-variation-settings:"SOFT" 60,"WONK" 1}
+
+/* ticker */
+.ticker{position:sticky;top:0;z-index:50;background:var(--ink);border-bottom:1px solid var(--rule);overflow:hidden;backdrop-filter:blur(8px)}
+.ticker-row{display:flex;align-items:center;gap:2.5rem;padding:.75rem 0;white-space:nowrap;animation:slide 52s linear infinite}
+.ticker-row span{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--paper);letter-spacing:.06em}
+.ticker-row b{color:var(--pink);font-weight:600;margin-right:.4rem}
+.ticker-row em{font-style:normal;color:var(--green)}
+.ticker-row .dn{color:var(--red)}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* layout */
+.wrap{max-width:1240px;margin:0 auto;padding:0 48px}
+@media (max-width:768px){.wrap{padding:0 24px}}
+
+/* masthead */
+.masthead{padding:40px 0 24px;border-bottom:1px solid var(--rule);display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.masthead .brand{display:flex;align-items:center;gap:14px}
+.masthead .dot{width:10px;height:10px;background:var(--pink);border-radius:50%;box-shadow:0 0 24px var(--pink)}
+.masthead h4{font-family:"Fraunces",serif;font-weight:600;font-style:italic;font-size:22px;letter-spacing:-.01em}
+.masthead .meta{display:flex;gap:2rem;align-items:center}
+.masthead .meta .label span{color:var(--paper)}
+
+/* hero */
+.hero{padding:72px 0 96px;position:relative}
+.hero .overline{display:flex;align-items:center;gap:14px;margin-bottom:42px}
+.hero .overline::before{content:"";width:48px;height:1px;background:var(--pink)}
+.hero h1{font-family:"Fraunces",serif;font-weight:400;font-variation-settings:"SOFT" 100,"WONK" 1;font-size:clamp(72px,14vw,220px);line-height:.82;letter-spacing:-.04em;margin:0 -4px 18px}
+.hero h1 .arrow{display:inline-block;color:var(--pink);font-style:italic;font-weight:300;transform:translateY(-.08em);padding:0 .08em}
+.hero h1 .word{display:inline-block}
+.hero h1 .word.loss{color:var(--paper);opacity:.55}
+.hero h1 .word.profit{color:var(--pink)}
+.hero .kicker{font-family:"Fraunces",serif;font-style:italic;font-weight:400;font-size:clamp(22px,2.4vw,32px);color:var(--paper-2);max-width:780px;line-height:1.35;margin-top:10px}
+.hero .byline{margin-top:46px;display:flex;gap:3rem;flex-wrap:wrap;align-items:baseline}
+.hero .byline .block span{display:block}
+.hero .byline .val{font-family:"JetBrains Mono",monospace;font-size:15px;color:var(--paper);margin-top:6px}
+
+/* deck */
+.deck{padding:64px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:linear-gradient(180deg,transparent,rgba(251,114,153,.03),transparent)}
+.deck-grid{display:grid;grid-template-columns:1fr 2fr;gap:72px}
+@media (max-width:900px){.deck-grid{grid-template-columns:1fr;gap:32px}}
+.deck h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(28px,3.4vw,44px);line-height:1.05;letter-spacing:-.015em;font-style:italic}
+.deck h2 em{font-style:normal;color:var(--pink)}
+.deck-body p{font-size:17px;line-height:1.85;color:var(--paper-2);margin-bottom:1.2em;text-align:justify}
+.deck-body p:first-letter{font-family:"Fraunces",serif;font-size:5.2em;float:left;line-height:.85;margin:.04em .12em -.1em 0;color:var(--pink);font-weight:500}
+.deck-body p strong{color:var(--paper);font-weight:600;background:linear-gradient(transparent 65%,rgba(251,114,153,.22) 65%)}
+
+/* section title */
+.section{padding:96px 0}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;gap:2rem;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:20px}
+.section-head .num{font-family:"Fraunces",serif;font-style:italic;font-weight:300;color:var(--pink);font-size:18px;letter-spacing:.05em}
+.section-head h3{font-family:"Fraunces",serif;font-weight:400;font-size:clamp(36px,5vw,64px);letter-spacing:-.02em;line-height:1;margin-top:6px}
+.section-head .right{color:var(--mute);font-size:13px;max-width:320px;text-align:right;line-height:1.5}
+
+/* trajectory table */
+.traj-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:72px}
+@media (max-width:1000px){.traj-grid{grid-template-columns:1fr}}
+table.stats{width:100%;border-collapse:collapse;font-family:"JetBrains Mono",monospace;font-size:13.5px}
+table.stats th,table.stats td{padding:14px 10px;text-align:right;border-bottom:1px solid var(--rule)}
+table.stats th:first-child,table.stats td:first-child{text-align:left;font-family:"Noto Serif SC",serif;color:var(--paper)}
+table.stats thead th{color:var(--mute);font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--paper-2)}
+table.stats tbody tr:hover{background:rgba(251,114,153,.04)}
+table.stats td .neg{color:var(--red)}
+table.stats td .pos{color:var(--green);font-weight:600}
+table.stats tr.highlight td{background:rgba(251,114,153,.06)}
+table.stats tr.highlight td:first-child{color:var(--pink)}
+
+.chart-card{background:var(--ink-2);border:1px solid var(--rule);padding:28px;border-radius:2px}
+.chart-card .title{font-family:"Fraunces",serif;font-style:italic;font-size:18px;margin-bottom:6px}
+.chart-card .sub{color:var(--mute);font-size:12px;margin-bottom:18px}
+
+/* drivers */
+.drivers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule)}
+@media (max-width:900px){.drivers-grid{grid-template-columns:1fr}}
+.driver{background:var(--ink);padding:44px 36px;position:relative;overflow:hidden;transition:background .4s}
+.driver:hover{background:var(--ink-2)}
+.driver .rank{font-family:"Fraunces",serif;font-style:italic;color:var(--pink);font-size:60px;line-height:1;font-weight:300;position:absolute;top:22px;right:28px;opacity:.25}
+.driver h4{font-family:"Fraunces",serif;font-weight:500;font-size:26px;line-height:1.2;margin:32px 0 18px;letter-spacing:-.01em;max-width:80%}
+.driver .stat{font-family:"JetBrains Mono",monospace;font-size:52px;color:var(--pink);font-weight:500;line-height:1;margin:24px 0 8px;letter-spacing:-.02em}
+.driver .stat small{font-size:18px;color:var(--mute);margin-left:6px;font-weight:400}
+.driver .desc{color:var(--paper-2);font-size:14.5px;line-height:1.7;max-width:90%}
+
+/* segments bars */
+.seg-list{display:flex;flex-direction:column;gap:28px;margin-top:24px}
+.seg-row{display:grid;grid-template-columns:240px 1fr 180px;align-items:center;gap:28px;padding:18px 0;border-bottom:1px solid var(--rule)}
+@media (max-width:768px){.seg-row{grid-template-columns:1fr;gap:10px}}
+.seg-row .name{font-family:"Noto Serif SC",serif;font-size:18px}
+.seg-row .name em{display:block;font-style:normal;color:var(--mute);font-size:11px;font-family:"Instrument Sans";letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.seg-row .bar{height:28px;background:rgba(244,239,228,.06);position:relative;overflow:hidden}
+.seg-row .bar .fill-23{position:absolute;top:0;left:0;height:100%;background:repeating-linear-gradient(45deg,rgba(244,239,228,.15) 0 4px,transparent 4px 8px);border-right:1px solid var(--paper-2)}
+.seg-row .bar .fill-25{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--pink-deep),var(--pink))}
+.seg-row .nums{font-family:"JetBrains Mono",monospace;font-size:14px;text-align:right}
+.seg-row .nums .big{font-size:22px;color:var(--paper);font-weight:500}
+.seg-row .nums .yoy{color:var(--green);font-weight:600}
+.seg-row .nums .yoy.neg{color:var(--red)}
+
+/* cost section */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+@media (max-width:900px){.cost-grid{grid-template-columns:1fr}}
+.cost-note{padding:40px;background:var(--ink-2);border-left:3px solid var(--pink);position:relative}
+.cost-note .quote{font-family:"Fraunces",serif;font-style:italic;font-weight:400;font-size:26px;line-height:1.35;color:var(--paper)}
+.cost-note .quote em{font-style:normal;color:var(--pink);background:linear-gradient(transparent 60%,rgba(251,114,153,.2) 60%)}
+.cost-note .attribution{margin-top:24px;padding-top:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--mute)}
+
+/* conclusion */
+.conclusion{padding:120px 0;background:linear-gradient(180deg,var(--ink) 0%,#15080E 100%);border-top:1px solid var(--rule)}
+.conclusion-inner{max-width:900px;margin:0 auto;text-align:center}
+.conclusion .label{color:var(--pink)}
+.conclusion h2{font-family:"Fraunces",serif;font-weight:300;font-style:italic;font-size:clamp(38px,5.5vw,72px);line-height:1.1;margin:20px 0 40px;letter-spacing:-.02em}
+.conclusion h2 em{font-style:normal;font-weight:500;color:var(--pink)}
+.conclusion .summary{font-size:18px;line-height:1.85;color:var(--paper-2);max-width:740px;margin:0 auto}
+.conclusion .triad{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:56px}
+@media (max-width:768px){.conclusion .triad{grid-template-columns:1fr}}
+.conclusion .triad .t{padding:28px 14px;border-right:1px solid var(--rule)}
+.conclusion .triad .t:last-child{border-right:none}
+.conclusion .triad .t .big{font-family:"Fraunces",serif;font-style:italic;font-weight:500;font-size:48px;color:var(--pink);letter-spacing:-.02em}
+.conclusion .triad .t .cap{font-family:"Instrument Sans";text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:var(--mute);margin-top:8px}
+
+/* outlook */
+.outlook{padding:80px 0;border-top:1px solid var(--rule)}
+.outlook-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media (max-width:900px){.outlook-grid{grid-template-columns:1fr}}
+.outlook .gauge{position:relative;padding:24px 0}
+.gauge-row{margin-bottom:32px}
+.gauge-row .g-label{display:flex;justify-content:space-between;margin-bottom:10px;align-items:baseline}
+.gauge-row .g-label .n{font-family:"Noto Serif SC",serif;font-size:16px}
+.gauge-row .g-label .v{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--mute)}
+.gauge-row .g-bar{position:relative;height:6px;background:rgba(244,239,228,.08);border-radius:3px}
+.gauge-row .g-cur{position:absolute;top:0;left:0;height:100%;background:var(--pink);border-radius:3px}
+.gauge-row .g-target{position:absolute;top:-4px;height:14px;width:2px;background:var(--gold)}
+.gauge-row .g-target::after{content:"目标";position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:"Instrument Sans";font-size:9px;letter-spacing:.18em;color:var(--gold);white-space:nowrap}
+
+/* footer */
+footer{padding:64px 0 80px;border-top:1px solid var(--rule);background:var(--ink)}
+footer .cols{display:grid;grid-template-columns:1fr 2fr;gap:56px}
+@media (max-width:700px){footer .cols{grid-template-columns:1fr}}
+footer h5{font-family:"Instrument Sans";text-transform:uppercase;letter-spacing:.22em;font-size:11px;color:var(--mute);margin-bottom:16px;font-weight:500}
+footer ul{list-style:none}
+footer ul li{padding:8px 0;border-bottom:1px dashed var(--rule);font-size:13px}
+footer ul li a{color:var(--paper-2);text-decoration:none;transition:color .2s}
+footer ul li a:hover{color:var(--pink)}
+footer .colophon{font-size:12px;color:var(--mute);line-height:1.8}
+footer .signoff{margin-top:48px;padding-top:24px;border-top:1px solid var(--rule);font-family:"Fraunces",serif;font-style:italic;color:var(--mute);font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+
+/* helpers */
+.rule-v{width:1px;background:var(--rule);align-self:stretch}
+.hidden-print{}
+
+/* entrance anims */
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.hero h1 .word,.hero h1 .arrow{display:inline-block;animation:rise .9s cubic-bezier(.2,.7,.15,1) both}
+.hero h1 .word.loss{animation-delay:.15s}
+.hero h1 .arrow{animation-delay:.45s}
+.hero h1 .word.profit{animation-delay:.75s}
+.hero .kicker{animation:rise 1s cubic-bezier(.2,.7,.15,1) both;animation-delay:1.05s}
+.hero .byline{animation:rise 1s cubic-bezier(.2,.7,.15,1) both;animation-delay:1.2s}
+
+/* cursor flourish */
+.pink-dot{display:inline-block;width:6px;height:6px;background:var(--pink);border-radius:50%;vertical-align:middle;margin:0 6px;box-shadow:0 0 12px var(--pink)}
+</style>
+</head>
+<body>
+
+<!-- scrolling ticker -->
+<div class="ticker">
+  <div class="ticker-row">
+    <span><b>NASDAQ:BILI</b> <em>USD ∎∎ MKT CAP $10.5B</em></span>
+    <span><b>FY2025 REVENUE</b> RMB 303.48亿 <em>+13.1% YoY</em></span>
+    <span><b>NET INCOME</b> RMB +11.9亿 <em>首次全年盈利</em></span>
+    <span><b>GROSS MARGIN</b> 36.6% <em>+12.4pp vs 2023</em></span>
+    <span><b>ADJ. NET</b> RMB 25.9亿 <em>+66倍 YoY</em></span>
+    <span><b>DAU</b> 113M <em>+10% YoY</em></span>
+    <span><b>OP. CASH FLOW</b> RMB 71.5亿 <em>+19% YoY</em></span>
+    <span><b>NASDAQ:BILI</b> <em>USD ∎∎ MKT CAP $10.5B</em></span>
+    <span><b>FY2025 REVENUE</b> RMB 303.48亿 <em>+13.1% YoY</em></span>
+    <span><b>NET INCOME</b> RMB +11.9亿 <em>首次全年盈利</em></span>
+    <span><b>GROSS MARGIN</b> 36.6% <em>+12.4pp vs 2023</em></span>
+    <span><b>ADJ. NET</b> RMB 25.9亿 <em>+66倍 YoY</em></span>
+    <span><b>DAU</b> 113M <em>+10% YoY</em></span>
+    <span><b>OP. CASH FLOW</b> RMB 71.5亿 <em>+19% YoY</em></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- masthead -->
+<div class="masthead">
+  <div class="brand">
+    <div class="dot"></div>
+    <h4>THE TURNAROUND DOSSIER</h4>
+  </div>
+  <div class="meta">
+    <div class="label">ISSUE № 01 <span>· 2026 APR</span></div>
+    <div class="label">FILED <span>· 调查报告</span></div>
+    <div class="label">SUBJECT <span>· 哔哩哔哩 / BILI</span></div>
+  </div>
+</div>
+
+<!-- hero -->
+<section class="hero">
+  <div class="overline"><span class="label">A 2023—2025 INVESTIGATION · 财务拐点专题</span></div>
+  <h1 class="serif-display">
+    <span class="word loss">亏</span><span class="arrow">→</span><span class="word profit">盈</span>
+  </h1>
+  <p class="kicker">B站用三年把毛利率从 24% 拉到 37%，从每年亏数十亿，到首次全年赚 11.9 亿。这不是单一爆款的偶然，而是一次标准的 <em style="color:var(--pink);font-style:normal">营业杠杆</em> 教科书案例。</p>
+
+  <div class="byline">
+    <div class="block">
+      <span class="label">调查者</span>
+      <span class="val">Claude / Opus 4.7</span>
+    </div>
+    <div class="block">
+      <span class="label">报告期</span>
+      <span class="val">FY 2023 · 2024 · 2025</span>
+    </div>
+    <div class="block">
+      <span class="label">数据截止</span>
+      <span class="val">2026 / 03 / 05 业绩电话会</span>
+    </div>
+    <div class="block">
+      <span class="label">阅读时长</span>
+      <span class="val">~ 9 MIN</span>
+    </div>
+  </div>
+</section>
+
+<!-- deck -->
+<section class="deck">
+  <div class="wrap" style="padding:0">
+    <div class="deck-grid">
+      <div>
+        <div class="label" style="margin-bottom:18px">EDITORIAL SUMMARY / 摘要</div>
+        <h2>一个关于<br><em>利润率</em>的故事，<br>而不是<em>销量</em>的故事。</h2>
+      </div>
+      <div class="deck-body">
+        <p>哔哩哔哩在 2025 财年实现了 <strong>上市以来首次全年 GAAP 盈利</strong>：营收 303.48 亿元（同比 +13%），GAAP 净利润 11.9 亿元，调整后净利润 25.9 亿元。而就在两年前，公司还在亏 48 亿。这份调查回答一个基本问题——这次盈利，是 ROE 觉醒、是 EBITDA 增长、是哪块收入拉升、还是成本削减？</p>
+        <p>答案是：<strong>都不是单独一项</strong>。真正的引擎，是毛利率在 24 个月里从 24.2% 跃升到 36.6%——整整 12.4 个百分点的结构性改善。与此同时，B站把总营业费用绝对值<strong>锁死在 100 亿出头</strong>不动，营收却跑出了 35% 的累计增长。这种"收入涨、费用不涨、毛利扩张"的三重叠加，就是营业杠杆——也是所有平台公司从亏损走向盈利时，财报上必须看到的那根曲线。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: Trajectory -->
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="num serif-display">№ 01 · <em style="font-style:normal">Trajectory</em></div>
+      <h3 class="serif-display">三年跨越。</h3>
+    </div>
+    <div class="right label">所有数字以 RMB 计<br>来源：B站 20-F 年报 / Q4 业绩公告</div>
+  </div>
+
+  <div class="traj-grid">
+    <table class="stats">
+      <thead>
+        <tr>
+          <th>指标</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>总营收（亿）</td><td>219.0</td><td>225.3</td><td>268.3</td><td class="pos">303.5</td></tr>
+        <tr class="highlight"><td>毛利率</td><td>17.6%</td><td>24.2%</td><td>32.7%</td><td>36.6%</td></tr>
+        <tr><td>毛利（亿）</td><td>38.5</td><td>54.4</td><td>87.7</td><td>111.1</td></tr>
+        <tr><td>营业费用（亿）</td><td>122.1</td><td>105.1</td><td>101.2</td><td>99.9</td></tr>
+        <tr><td>营业利润（亿）</td><td><span class="neg">-83.6</span></td><td><span class="neg">-50.6</span></td><td><span class="neg">-13.4</span></td><td><span class="pos">+11.2</span></td></tr>
+        <tr class="highlight"><td>GAAP 净利润（亿）</td><td><span class="neg">-75.0</span></td><td><span class="neg">-48.2</span></td><td><span class="neg">-13.6</span></td><td><span class="pos">+11.9</span></td></tr>
+        <tr><td>Non-GAAP 调整净利（亿）</td><td>—</td><td>-34.1</td><td>-0.4</td><td><span class="pos">+25.9</span></td></tr>
+        <tr><td>EBITDA（亿）</td><td><span class="neg">-35.9</span></td><td><span class="neg">-16.7</span></td><td>+11.9</td><td><span class="pos">+35.5</span></td></tr>
+        <tr><td>经营现金流（亿）</td><td><span class="neg">-39.1</span></td><td>+2.7</td><td>+60.1</td><td><span class="pos">+71.5</span></td></tr>
+      </tbody>
+    </table>
+
+    <div>
+      <div class="chart-card">
+        <div class="title">营收 × 毛利率 × 净利润</div>
+        <div class="sub">柱：营收（亿元）｜细线：毛利率（%）｜粗线：净利润（亿元）</div>
+        <div style="height:340px"><canvas id="trajChart"></canvas></div>
+      </div>
+      <p class="label" style="margin-top:18px;line-height:1.6">注意 2023→2025 毛利率（浅色线）的斜率——这是这份财报最重要的一张图。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: Three drivers -->
+<section class="section" style="border-top:1px solid var(--rule);padding-top:96px">
+  <div class="section-head">
+    <div>
+      <div class="num serif-display">№ 02 · <em style="font-style:normal">Three Drivers</em></div>
+      <h3 class="serif-display">三根支柱，撑起一次扭亏。</h3>
+    </div>
+    <div class="right label">排序按贡献度 · 每项独立看都是正向<br>三项叠加即为营业杠杆效应</div>
+  </div>
+
+  <div class="drivers-grid">
+    <div class="driver">
+      <div class="rank serif-display">01</div>
+      <div class="label">Pillar One / 毛利率扩张</div>
+      <h4 class="serif-display">从 24.2% 到 36.6%，连续 14 个季度</h4>
+      <div class="stat mono">+12.4<small>pp</small></div>
+      <p class="desc">若毛利率停在 2023 年水平，2025 年毛利会少 <b style="color:var(--paper)">37.7 亿</b>——差不多等于 2025 年全年净利的 3 倍。高毛利广告业务占比从 28% 升至 33%，同时内容分成结构优化、带宽服务器摊薄。<b style="color:var(--pink)">这是头号引擎。</b></p>
+    </div>
+
+    <div class="driver">
+      <div class="rank serif-display">02</div>
+      <div class="label">Pillar Two / 高毛利收入崛起</div>
+      <h4 class="serif-display">广告两年增长 57%，游戏靠《三谋》翻身</h4>
+      <div class="stat mono">+100.6<small>亿 · 广告</small></div>
+      <p class="desc">广告收入 2025 年 100.6 亿（+23%），两年累计 +57%。驱动力：Story Mode 竖屏广告、AI 投放算法、电商小蓝链导流淘宝京东。游戏板块靠独家授权的《三国：谋定天下》2024 年 6 月爆款上线，成 B 站史上最快破 10 亿流水的游戏。</p>
+    </div>
+
+    <div class="driver">
+      <div class="rank serif-display">03</div>
+      <div class="label">Pillar Three / 费用冻结</div>
+      <h4 class="serif-display">营收涨 35%，费用不涨——研发还砍了 21%</h4>
+      <div class="stat mono">-5.2<small>亿 · OpEx</small></div>
+      <p class="desc">两年营收从 225 亿涨到 303 亿，同期销售+管理+研发总费用从 105.1 亿 <b style="color:var(--paper)">降到</b> 99.9 亿。研发单项裁了 21%（44.7→35.3 亿），反映组织优化与项目聚焦。费用率从 46.6% 压到 32.9%——13.7 个百分点直接落入利润。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Segments -->
+<section class="section" style="border-top:1px solid var(--rule)">
+  <div class="section-head">
+    <div>
+      <div class="num serif-display">№ 03 · <em style="font-style:normal">Revenue Mix</em></div>
+      <h3 class="serif-display">是哪一块在拉车？</h3>
+    </div>
+    <div class="right label">条纹底＝2023 水平｜粉色＝2025 水平<br>两者之差即为两年累计增长</div>
+  </div>
+
+  <div class="seg-list">
+    <div class="seg-row">
+      <div class="name"><em>Advertising</em>广告业务</div>
+      <div class="bar">
+        <div class="fill-25" style="width:100%"></div>
+        <div class="fill-23" style="width:63.7%"></div>
+      </div>
+      <div class="nums">
+        <div class="big">100.6 <span style="color:var(--mute);font-size:12px">亿</span></div>
+        <div class="yoy">+23% YoY · +57% 2Y</div>
+      </div>
+    </div>
+    <div class="seg-row">
+      <div class="name"><em>Value-Added Services</em>增值服务（大会员／直播）</div>
+      <div class="bar">
+        <div class="fill-25" style="width:100%"></div>
+        <div class="fill-23" style="width:83.1%"></div>
+      </div>
+      <div class="nums">
+        <div class="big">119.3 <span style="color:var(--mute);font-size:12px">亿</span></div>
+        <div class="yoy">+8% YoY · +20% 2Y</div>
+      </div>
+    </div>
+    <div class="seg-row">
+      <div class="name"><em>Mobile Games</em>移动游戏</div>
+      <div class="bar">
+        <div class="fill-25" style="width:100%"></div>
+        <div class="fill-23" style="width:62.9%"></div>
+      </div>
+      <div class="nums">
+        <div class="big">63.9 <span style="color:var(--mute);font-size:12px">亿</span></div>
+        <div class="yoy">+14% YoY · +59% 2Y</div>
+      </div>
+    </div>
+    <div class="seg-row">
+      <div class="name"><em>IP Derivatives &amp; Others</em>IP 衍生品及其他</div>
+      <div class="bar">
+        <div class="fill-25" style="width:90%"></div>
+        <div class="fill-23" style="width:100%"></div>
+      </div>
+      <div class="nums">
+        <div class="big">19.7 <span style="color:var(--mute);font-size:12px">亿</span></div>
+        <div class="yoy neg">-3% YoY · -10% 2Y</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:32px">
+    <div class="chart-card" style="grid-column:1/-1">
+      <div class="title">四大业务两年增长分解（FY2023 → FY2025）</div>
+      <div class="sub">广告增量 36.5 亿占全部增量的 47%，是这次盈利最重要的单一收入来源</div>
+      <div style="height:280px"><canvas id="segChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Costs -->
+<section class="section" style="border-top:1px solid var(--rule)">
+  <div class="section-head">
+    <div>
+      <div class="num serif-display">№ 04 · <em style="font-style:normal">Cost Discipline</em></div>
+      <h3 class="serif-display">费用为什么能"冻住"？</h3>
+    </div>
+    <div class="right label">OpEx 三年轨迹<br>研发砍得最重，销售费用维持效率投放</div>
+  </div>
+
+  <div class="cost-grid">
+    <div class="chart-card">
+      <div class="title">三项费用绝对值（RMB 亿）</div>
+      <div class="sub">2023 / 2024 / 2025 三期对比</div>
+      <div style="height:300px"><canvas id="costChart"></canvas></div>
+    </div>
+    <div class="cost-note">
+      <div class="label" style="margin-bottom:14px;color:var(--pink)">Key insight · 管理层纪律</div>
+      <div class="quote">"营收增长 35% 的两年里，B 站<em>没有新增一分钱的绝对费用</em>。这不是财技，是组织纪律——每一元新增广告毛利几乎全部直接落入营业利润。"</div>
+      <div class="attribution">—— 调查结论｜费用率从 2023 年的 46.6% 压缩到 2025 年的 32.9%，释放了约 14 个百分点的利润空间</div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: User base -->
+<section class="section" style="border-top:1px solid var(--rule);padding-top:96px;padding-bottom:80px">
+  <div class="section-head">
+    <div>
+      <div class="num serif-display">№ 05 · <em style="font-style:normal">Community</em></div>
+      <h3 class="serif-display">盈利没有牺牲社区。</h3>
+    </div>
+    <div class="right label">Q4 2025 用户指标<br>日活、月活、时长同步正增长</div>
+  </div>
+
+  <div class="conclusion-inner" style="max-width:none">
+    <div class="conclusion triad" style="background:transparent;padding:0;border:none">
+      <div class="t" style="border-right:1px solid var(--rule)">
+        <div class="big" style="color:var(--pink)">1.13<span style="font-size:24px;color:var(--mute)"> 亿</span></div>
+        <div class="cap">日均活跃用户（DAU）</div>
+        <div class="label" style="color:var(--green);margin-top:8px">+10% YoY</div>
+      </div>
+      <div class="t" style="border-right:1px solid var(--rule)">
+        <div class="big" style="color:var(--pink)">3.66<span style="font-size:24px;color:var(--mute)"> 亿</span></div>
+        <div class="cap">月均活跃用户（MAU）</div>
+        <div class="label" style="color:var(--green);margin-top:8px">+8% YoY</div>
+      </div>
+      <div class="t">
+        <div class="big" style="color:var(--pink)">107<span style="font-size:24px;color:var(--mute)"> 分钟</span></div>
+        <div class="cap">日均用户使用时长</div>
+        <div class="label" style="color:var(--green);margin-top:8px">+8 MIN YoY</div>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--paper-2);font-size:17px;max-width:720px;margin:56px auto 0;line-height:1.8">这组数据很重要——它说明利润不是靠 "砍用户体验换广告位"、也不是靠 "压缩内容投入" 换出来的。<strong style="color:var(--paper)">用户还在涨、停留时间还在涨，商业化效率也在涨。</strong>这三件事同时成立时，才算是健康的盈利拐点。</p>
+  </div>
+</section>
+
+<!-- Section 6: Outlook -->
+<section class="outlook">
+  <div class="section-head" style="padding-bottom:0;border-bottom:none">
+    <div>
+      <div class="num serif-display">№ 06 · <em style="font-style:normal">Outlook</em></div>
+      <h3 class="serif-display">管理层的下一关。</h3>
+    </div>
+    <div class="right label">管理层长期目标指引<br>来源：Q4 2025 电话会议</div>
+  </div>
+
+  <div class="outlook-grid">
+    <div>
+      <div class="gauge-row">
+        <div class="g-label">
+          <div class="n">毛利率 Gross Margin</div>
+          <div class="v mono">当前 36.6% · 目标 40–45%</div>
+        </div>
+        <div class="g-bar">
+          <div class="g-cur" style="width:81%"></div>
+          <div class="g-target" style="left:89%"></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="g-label">
+          <div class="n">调整后营业利润率</div>
+          <div class="v mono">当前 3.7% · 目标 15–20%</div>
+        </div>
+        <div class="g-bar">
+          <div class="g-cur" style="width:21%"></div>
+          <div class="g-target" style="left:85%"></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="g-label">
+          <div class="n">调整后净利率</div>
+          <div class="v mono">当前 8.5% · 隐含目标 ~15%</div>
+        </div>
+        <div class="g-bar">
+          <div class="g-cur" style="width:56%"></div>
+          <div class="g-target" style="left:95%"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--paper-2)">
+        如果广告继续以 20% 量级增长、游戏不失速、费用持续"冻结"——<br>
+        <span style="color:var(--pink);font-style:normal;font-weight:500">2027 年毛利率冲 40% 并不激进。</span>
+      </p>
+      <p style="color:var(--mute);font-size:14px;margin-top:20px;line-height:1.8">当前毛利率距指引下限 3.4 pp，营业利润率距下限 11.3 pp——毛利率已接近拐点，营业利润率仍有纵深。下一步的关键变量：广告增速能否维持 20%+、以及 Q4 2025 出现的游戏 -14% 是否只是 LTM 基数问题。</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- Conclusion -->
+<section class="conclusion">
+  <div class="wrap">
+    <div class="conclusion-inner">
+      <div class="label">The Bottom Line · 结论</div>
+      <h2 class="serif-display">这不是故事的开始，<br>而是<em>商业模式验证完成</em>的信号。</h2>
+      <p class="summary">B 站用三年证明：内容社区型平台只要广告商业化成熟、内容成本可控、组织费用有纪律，盈利是数学问题，不是哲学问题。核心变化不是 ROE、不是单一业务爆发、更不是大幅裁员——而是<strong style="color:var(--pink)">毛利率从 24% 涨到 37%</strong> 这一根最普通也最难啃的线。</p>
+
+      <div class="triad">
+        <div class="t">
+          <div class="big">× 2</div>
+          <div class="cap">毛利金额翻倍 2Y</div>
+        </div>
+        <div class="t">
+          <div class="big">+ 60亿</div>
+          <div class="cap">净利润改善 2Y</div>
+        </div>
+        <div class="t">
+          <div class="big">× 26</div>
+          <div class="cap">经营现金流 2Y</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h5>Colophon · 方法</h5>
+        <p class="colophon">
+          报告采集于 2026 年 4 月 17 日。数据源以 B 站官方 20-F / 季度业绩公告为准，辅以 yfinance（Yahoo Finance 公开接口）交叉核对收入、净利润、EBITDA、现金流。中文语境数据参考新浪财经、证券时报、21 经济网报道。图表由 Chart.js 渲染，色彩取自 B 站品牌标识符 #FB7299。文章观点仅供研究参考，不构成投资建议。
+        </p>
+      </div>
+      <div>
+        <h5>Sources · 信息源</h5>
+        <ul>
+          <li><a href="https://ir.bilibili.com/cn/financial-information/" target="_blank">哔哩哔哩 IR · 财务信息中心（2025 年报 2026/04/16 存档）</a></li>
+          <li><a href="https://ir.bilibili.com/cn/news-and-events/" target="_blank">哔哩哔哩 IR · 新闻发布列表</a></li>
+          <li><a href="https://www.stocktitan.net/news/BILI/bilibili-inc-announces-fourth-quarter-and-fiscal-year-2025-financial-6c6s3lfjjwhh.html" target="_blank">Q4 &amp; FY2025 Earnings Release（2026/03/05）</a></li>
+          <li><a href="https://www.globenewswire.com/news-release/2025/02/20/3029366/0/en/Bilibili-Inc-Announces-Fourth-Quarter-and-Fiscal-Year-2024-Financial-Results.html" target="_blank">Q4 &amp; FY2024 Earnings Release（GlobeNewswire）</a></li>
+          <li><a href="https://finance.sina.com.cn/stock/t/2026-03-05/doc-inhpxspr3225949.shtml" target="_blank">新浪财经 · B 站 2025 年营收 303.5 亿 实现全年盈利</a></li>
+          <li><a href="https://stcn.com/article/detail/3664058.html" target="_blank">证券时报 · B 站首次实现全年盈利 广告业务立大功</a></li>
+          <li><a href="https://www.21jingji.com/article/20241120/herald/751e62dae3280f04c2d038964fa08ade.html" target="_blank">21 经济网 · 首次盈利，B 站怎么做到的</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="signoff">
+      <div>— 终 · The Turnaround Dossier No. 01 —</div>
+      <div><span class="pink-dot"></span> 2026 / 04 / 17</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.color = '#8A857A';
+Chart.defaults.borderColor = 'rgba(244,239,228,.1)';
+
+// Trajectory chart
+const t = document.getElementById('trajChart').getContext('2d');
+new Chart(t, {
+  type: 'bar',
+  data: {
+    labels: ['FY2022','FY2023','FY2024','FY2025'],
+    datasets: [
+      {
+        type: 'bar', label: '营收 (亿)',
+        data: [219.0, 225.3, 268.3, 303.5],
+        backgroundColor: 'rgba(244,239,228,.15)',
+        borderColor: 'rgba(244,239,228,.4)',
+        borderWidth: 1, yAxisID: 'y', order: 3
+      },
+      {
+        type: 'line', label: '毛利率 (%)',
+        data: [17.6, 24.2, 32.7, 36.6],
+        borderColor: '#FB7299', backgroundColor: 'rgba(251,114,153,.1)',
+        borderWidth: 2, tension: .35, yAxisID: 'y1',
+        pointBackgroundColor: '#FB7299', pointRadius: 4, pointHoverRadius: 6, order: 1
+      },
+      {
+        type: 'line', label: '净利润 (亿)',
+        data: [-75.0, -48.2, -13.6, 11.9],
+        borderColor: '#CFA14A', backgroundColor: 'rgba(207,161,74,.1)',
+        borderWidth: 3, tension: .3, yAxisID: 'y',
+        pointBackgroundColor: '#CFA14A', pointRadius: 5, pointHoverRadius: 7, order: 2,
+        borderDash: []
+      }
+    ]
+  },
+  options: {
+    maintainAspectRatio: false, responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { color:'#F4EFE4', font:{ size:11 }, boxWidth:10, boxHeight:10 } },
+      tooltip: { backgroundColor:'#1A1A1F', titleColor:'#F4EFE4', bodyColor:'#F4EFE4', borderColor:'#FB7299', borderWidth:1 }
+    },
+    scales: {
+      x: { grid:{ color:'rgba(244,239,228,.05)' }, ticks:{ color:'#8A857A' } },
+      y: { position:'left', grid:{ color:'rgba(244,239,228,.05)' }, ticks:{ color:'#8A857A', callback:(v)=>v+''  }, title:{ display:true, text:'亿元', color:'#8A857A' } },
+      y1:{ position:'right', grid:{ display:false }, ticks:{ color:'#FB7299', callback:(v)=>v+'%' }, title:{ display:true, text:'毛利率', color:'#FB7299' }, min:10, max:45 }
+    }
+  }
+});
+
+// Segment chart - 2Y growth decomposition
+const s = document.getElementById('segChart').getContext('2d');
+new Chart(s, {
+  type: 'bar',
+  data: {
+    labels: ['广告','增值服务','移动游戏','IP 衍生品'],
+    datasets: [
+      { label:'FY2023', data:[64.1, 99.1, 40.2, 21.8], backgroundColor:'rgba(244,239,228,.18)', borderColor:'rgba(244,239,228,.4)', borderWidth:1, borderRadius:0 },
+      { label:'FY2024', data:[81.9, 110.0, 56.1, 20.3], backgroundColor:'rgba(251,114,153,.4)', borderColor:'rgba(251,114,153,.6)', borderWidth:1, borderRadius:0 },
+      { label:'FY2025', data:[100.6, 119.3, 63.9, 19.7], backgroundColor:'#FB7299', borderColor:'#D94173', borderWidth:1, borderRadius:0 }
+    ]
+  },
+  options: {
+    maintainAspectRatio:false, responsive:true, indexAxis:'x',
+    plugins:{
+      legend:{ position:'bottom', labels:{ color:'#F4EFE4', font:{ size:11 }, boxWidth:10, boxHeight:10 } },
+      tooltip:{ backgroundColor:'#1A1A1F', titleColor:'#F4EFE4', bodyColor:'#F4EFE4', borderColor:'#FB7299', borderWidth:1, callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y} 亿` } }
+    },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ color:'#F4EFE4', font:{ size:12 } } },
+      y:{ grid:{ color:'rgba(244,239,228,.05)' }, ticks:{ color:'#8A857A', callback:(v)=>v+' 亿' } }
+    }
+  }
+});
+
+// Cost chart
+const c = document.getElementById('costChart').getContext('2d');
+new Chart(c, {
+  type: 'bar',
+  data: {
+    labels: ['销售费用','管理费用','研发费用'],
+    datasets: [
+      { label:'FY2023', data:[39.2,21.2,44.7], backgroundColor:'rgba(244,239,228,.18)', borderWidth:0, borderRadius:0 },
+      { label:'FY2024', data:[44.0,20.3,36.9], backgroundColor:'rgba(251,114,153,.35)', borderWidth:0, borderRadius:0 },
+      { label:'FY2025', data:[43.9,20.6,35.3], backgroundColor:'#FB7299', borderWidth:0, borderRadius:0 }
+    ]
+  },
+  options: {
+    maintainAspectRatio:false, responsive:true,
+    plugins:{
+      legend:{ position:'bottom', labels:{ color:'#F4EFE4', font:{ size:11 }, boxWidth:10, boxHeight:10 } },
+      tooltip:{ backgroundColor:'#1A1A1F', titleColor:'#F4EFE4', bodyColor:'#F4EFE4', borderColor:'#FB7299', borderWidth:1, callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y} 亿` } }
+    },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ color:'#F4EFE4', font:{ size:12 } } },
+      y:{ grid:{ color:'rgba(244,239,228,.05)' }, ticks:{ color:'#8A857A', callback:(v)=>v+' 亿' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
